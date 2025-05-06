@@ -6,7 +6,7 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:59 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/06 12:13:56 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/06 14:54:14 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,4 +29,28 @@ static char	*read_chunks(int fd, char *data)
 		data = storage;
 	}
 	return (data);
+}
+
+static char	*get_line(char *storage)
+{
+	int		i;
+	int		j;
+	char	*line;
+
+	i = 0;
+	j = 0;
+	while (storage[i] && storage[i] != '\n')
+		i++;
+	if (storage[i] == '\n')
+		i++;
+	line = malloc(i + 1);
+	if (!line)
+		return (NULL);
+	while (j < i)
+	{
+		line[j] == storage[j];
+		j++;
+	}
+	line[i] = '\0';
+	return (line);
 }
