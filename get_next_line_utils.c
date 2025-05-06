@@ -6,7 +6,7 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:50 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/06 11:45:33 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/06 11:47:36 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ char	*ft_strchr(const char *s, int c)
 
 char	*get_str(const char *src, size_t start, size_t len)
 {
-	char *line;
-	size_t i;
+	char	*line;
+	size_t	i;
 
 	i = 0;
 	line = malloc(len + 1);
