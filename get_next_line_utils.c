@@ -6,7 +6,7 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:50 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/06 11:55:42 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/07 16:16:49 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 size_t	ft_strlen(const char *string)
 {
-	unsigned int	count;
+	size_t	count;
 
 	count = 0;
 	while (string[count] != 0)
@@ -28,8 +28,8 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	int		i;
 	int		j;
 
-	if (!s1 || !s2)
-		return (NULL);
+	// if (!s1 || !s2)
+	// 	return (NULL);
 	i = 0;
 	j = 0;
 	str_out = (char *)malloc((ft_strlen(s1) + ft_strlen(s2)) * sizeof(char)
@@ -55,6 +55,8 @@ char	*ft_strchr(const char *s, int c)
 	char	x;
 	int		i;
 
+	if (!s)
+		return (NULL);
 	i = 0;
 	x = (char)c;
 	while (s[i] != '\0')
@@ -67,18 +69,24 @@ char	*ft_strchr(const char *s, int c)
 		return ((char *)(s + i));
 	return (NULL);
 }
-
-char	*strdup(const char *src, size_t start, size_t len)
+char	*ft_strdup(const char *s1)
 {
-	char	*line;
+	char	*str_out;
 	size_t	i;
+	size_t	s1_len;
 
 	i = 0;
-	line = malloc(len + 1);
-	if (!line)
+	if (!s1)
 		return (NULL);
-	while (i++ < len)
-		line[i] = src[start + i];
-	line[start] = '\0';
-	return (line);
+	s1_len = ft_strlen(s1);
+	str_out = (char *)malloc(s1_len * sizeof(char) + 1);
+	if (str_out == NULL)
+		return (NULL);
+	while (s1[i])
+	{
+		str_out[i] = s1[i];
+		i++;
+	}
+	str_out[i] = '\0';
+	return (str_out);
 }
