@@ -6,82 +6,70 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:59 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/06 19:38:59 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/08 15:16:38 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static char	*read_chunks(int fd, char *data)
+char	*read_chunk(int fd, char *storage)
 {
 	char	buffer[BUFFER_SIZE + 1];
-	char	*storage;
-	ssize_t	read_bytes;
-	
-	if(!data)
-		data=ft_strdup("");
-	while (!ft_strchr(data, '\n'))
+	ssize_t	bytes;
+	char	*temp;
+
+	if (!storage)
+		storage = ft_strdup("");
+	if (!storage)
+		return (NULL);
+	while (!ft_strchr(storage, '\n'))
 	{
-		read_bytes = read(fd, buffer, BUFFER_SIZE);
-		if (read_bytes <= 0)
+		bytes = read(fd, buffer, BUFFER_SIZE);
+		if (bytes <= 0)
 			break ;
-		buffer[read_bytes] = '\0';
-		storage = ft_strjoin(data, buffer);
-		free(data);
-		data = storage;
+		buffer[bytes] = '\0';
+		temp = ft_strjoin(storage, buffer);
+		free(storage);
+		if (!temp)
+			return (NULL);
+		storage = temp;
 	}
-	return (data);
+	return (storage);
 }
 
 static char	*get_line(char *storage)
 {
 	int		i;
-	int		j;
 	char	*line;
 
 	i = 0;
-	j = 0;
+	if (!storage || storage[0] == '\0')
+		return (NULL);
 	while (storage[i] && storage[i] != '\n')
 		i++;
 	if (storage[i] == '\n')
 		i++;
-	line = malloc(i + 1);
-	if (!line)
-		return (NULL);
-	while (j < i)
-	{
-		line[j] = storage[j];
-		j++;
-	}
-	line[i] = '\0';
+	line = ft_substr(storage, 0, i);
 	return (line);
 }
 
 static char	*trim_buffer(char *storage)
 {
-	size_t	i = 0;
-	size_t	j = 0;
-	size_t	len;
+	size_t	i;
 	char	*updated_storage;
 
+	i = 0;
 	while (storage[i] && storage[i] != '\n')
 		i++;
 	if (storage[i] == '\n')
 		i++;
-
-	if (!storage[i])
-		return (ft_strdup("")); 
-
-	len = ft_strlen(storage + i);
-	updated_storage = malloc(len + 1);
-	if (!updated_storage)
-		return (NULL);
-	while (j < len)
+	if (storage[i] == '\0')
 	{
-		updated_storage[j] = storage[i + j];
-		j++;
+		free(storage);
+		return (NULL);
 	}
-	updated_storage[len] = '\0';
+	updated_storage = ft_strdup(storage + i);
+	free(storage);
 	return (updated_storage);
 }
 
@@ -89,24 +77,37 @@ char	*get_next_line(int fd)
 {
 	static char	*storage;
 	char		*line;
-	char		*updated_storage;
 
 	if (BUFFER_SIZE <= 0 || fd < 0)
 		return (NULL);
-	storage = read_chunks(fd, storage);
-	if(!storage || storage[0] == '\0')
-		return(NULL);
+	storage = read_chunk(fd, storage);
+	if (!storage)
+		return (NULL);
 	line = get_line(storage);
-	updated_storage = trim_buffer(storage);
-	if (updated_storage)
+	storage = trim_buffer(storage);
+	if (line && *line == '\0')
 	{
-		free(storage);
-		storage = updated_storage;
-	}
-	else
-	{
-		free(storage);
-		storage = NULL;
+		free(line);
+		return (NULL);
 	}
 	return (line);
 }
+
+// int main(void)
+// {
+//     int fd = open("test.txt", O_RDONLY);
+//     if (fd < 0)
+//     {
+//         return 1;
+//     }
+
+//     char *line;
+//     while ((line = get_next_line(fd)) != NULL)
+//     {
+//         printf("%s", line);
+//         free(line); // Make sure your GNL allocates memory
+//     }
+
+//     close(fd);
+//     return 0;
+// }

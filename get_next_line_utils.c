@@ -6,7 +6,7 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:50 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/07 16:16:49 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/07 19:12:46 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,34 +20,6 @@ size_t	ft_strlen(const char *string)
 	while (string[count] != 0)
 		count++;
 	return (count);
-}
-
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*str_out;
-	int		i;
-	int		j;
-
-	// if (!s1 || !s2)
-	// 	return (NULL);
-	i = 0;
-	j = 0;
-	str_out = (char *)malloc((ft_strlen(s1) + ft_strlen(s2)) * sizeof(char)
-			+ 1);
-	if (str_out == NULL)
-		return (NULL);
-	while (s1[i])
-	{
-		str_out[i] = s1[i];
-		i++;
-	}
-	while (s2[j])
-	{
-		str_out[i + j] = s2[j];
-		j++;
-	}
-	str_out[i + j] = '\0';
-	return (str_out);
 }
 
 char	*ft_strchr(const char *s, int c)
@@ -69,17 +41,75 @@ char	*ft_strchr(const char *s, int c)
 		return ((char *)(s + i));
 	return (NULL);
 }
+
+char	*ret_null_term(char *str_out)
+{
+	if (str_out == NULL)
+		return (NULL);
+	str_out[0] = '\0';
+	return (str_out);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char	*str_out;
+	size_t	str_len;
+	size_t	i;
+
+	str_len = ft_strlen(s);
+	i = 0;
+	if (s == NULL)
+		return (NULL);
+	if (start >= str_len)
+	{
+		str_out = (char *)malloc(1);
+		return (ret_null_term(str_out));
+	}
+	if (len > (str_len - start))
+		len = str_len - start;
+	str_out = (char *)malloc((len + 1) * sizeof(char));
+	if (str_out == NULL)
+		return (NULL);
+	while (i < len && s[start + i] != '\0')
+	{
+		str_out[i] = s[start + i];
+		i++;
+	}
+	str_out[i] = '\0';
+	return (str_out);
+}
+
 char	*ft_strdup(const char *s1)
 {
 	char	*str_out;
-	size_t	i;
-	size_t	s1_len;
+	int		i;
+	int		j;
+	int		s1_len;
 
 	i = 0;
-	if (!s1)
-		return (NULL);
+	j = 0;
 	s1_len = ft_strlen(s1);
 	str_out = (char *)malloc(s1_len * sizeof(char) + 1);
+	if (!str_out)
+		return (NULL);
+	while (s1[j])
+		str_out[i++] = s1[j++];
+	str_out[i] = '\0';
+	return (str_out);
+}
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	char	*str_out;
+	int		i;
+	int		j;
+
+	if (!s1 || !s2)
+		return (NULL);
+	i = 0;
+	j = 0;
+	str_out = (char *)malloc((ft_strlen(s1) + ft_strlen(s2)) * sizeof(char)
+			+ 1);
 	if (str_out == NULL)
 		return (NULL);
 	while (s1[i])
@@ -87,6 +117,11 @@ char	*ft_strdup(const char *s1)
 		str_out[i] = s1[i];
 		i++;
 	}
-	str_out[i] = '\0';
+	while (s2[j])
+	{
+		str_out[i + j] = s2[j];
+		j++;
+	}
+	str_out[i + j] = '\0';
 	return (str_out);
 }
