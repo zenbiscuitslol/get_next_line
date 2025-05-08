@@ -6,7 +6,7 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:50 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/08 17:47:03 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/08 18:36:26 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,18 +46,18 @@ char	*ft_substr(const char *s, unsigned int start, size_t len)
 {
 	char	*sub;
 	size_t	i;
-	size_t	len;
+	size_t	s_len;
 
 	i = 0;
-	len = 0;
+	s_len = 0;
 	if (!s)
 		return (NULL);
-	while (s[len])
-		len++;
-	if (start >= len)
+	while (s[s_len])
+		s_len++;
+	if (start >= s_len)
 		len = 0;
-	else if (len > len - start)
-		len = len - start;
+	else if (len > s_len - start)
+		len = s_len - start;
 	sub = malloc(len + 1);
 	if (!sub)
 		return (NULL);
@@ -91,9 +91,9 @@ char	*ft_strdup(const char *s1)
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	char *str_out;
-	int i;
-	int j;
+	char	*str_out;
+	int		i;
+	int		j;
 
 	if (!s1 || !s2)
 		return (NULL);
