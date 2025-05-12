@@ -6,7 +6,7 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:50 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/07 19:12:46 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:31:17 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,41 +42,32 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-char	*ret_null_term(char *str_out)
+char	*ft_substr(const char *s, unsigned int start, size_t len)
 {
-	if (str_out == NULL)
-		return (NULL);
-	str_out[0] = '\0';
-	return (str_out);
-}
-
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	char	*str_out;
-	size_t	str_len;
+	char	*sub;
 	size_t	i;
+	size_t	s_len;
 
-	str_len = ft_strlen(s);
 	i = 0;
-	if (s == NULL)
+	s_len = 0;
+	if (!s)
 		return (NULL);
-	if (start >= str_len)
-	{
-		str_out = (char *)malloc(1);
-		return (ret_null_term(str_out));
-	}
-	if (len > (str_len - start))
-		len = str_len - start;
-	str_out = (char *)malloc((len + 1) * sizeof(char));
-	if (str_out == NULL)
+	while (s[s_len])
+		s_len++;
+	if (start >= s_len)
+		len = 0;
+	else if (len > s_len - start)
+		len = s_len - start;
+	sub = malloc(len + 1);
+	if (!sub)
 		return (NULL);
-	while (i < len && s[start + i] != '\0')
+	while (i < len)
 	{
-		str_out[i] = s[start + i];
+		sub[i] = s[start + i];
 		i++;
 	}
-	str_out[i] = '\0';
-	return (str_out);
+	sub[i] = '\0';
+	return (sub);
 }
 
 char	*ft_strdup(const char *s1)

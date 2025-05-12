@@ -6,11 +6,12 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:59 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/08 15:16:38 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:36:28 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include "fcntl.h"
 
 char	*read_chunk(int fd, char *storage)
 {
@@ -25,13 +26,16 @@ char	*read_chunk(int fd, char *storage)
 	while (!ft_strchr(storage, '\n'))
 	{
 		bytes = read(fd, buffer, BUFFER_SIZE);
-		if (bytes <= 0)
+		if (bytes < 0)
+		{
+			free(storage);
+			return (NULL);
+		}
+		if (bytes == 0)
 			break ;
 		buffer[bytes] = '\0';
 		temp = ft_strjoin(storage, buffer);
 		free(storage);
-		if (!temp)
-			return (NULL);
 		storage = temp;
 	}
 	return (storage);
@@ -84,30 +88,35 @@ char	*get_next_line(int fd)
 	if (!storage)
 		return (NULL);
 	line = get_line(storage);
-	storage = trim_buffer(storage);
-	if (line && *line == '\0')
+	if (!line)
 	{
-		free(line);
+		free(storage);
+		storage = NULL;
 		return (NULL);
 	}
+	storage = trim_buffer(storage);
+	if (!storage)
+		return (line);
+	if (line[0] == '\0')
+		return (free(line),free(storage), storage=NULL, NULL);
 	return (line);
 }
 
+
 // int main(void)
 // {
+// 	int counter = 0;
+// 	int i=0;
+// 	char *next_line;
 //     int fd = open("test.txt", O_RDONLY);
 //     if (fd < 0)
-//     {
-//         return 1;
-//     }
-
-//     char *line;
-//     while ((line = get_next_line(fd)) != NULL)
-//     {
-//         printf("%s", line);
-//         free(line); // Make sure your GNL allocates memory
-//     }
-
+//         return (1);
+// 	while(i++ < 3)
+// 	{
+// 		next_line = get_next_line(fd);
+// 		printf("%s",next_line);
+// 		free(next_line);
+// 	}
 //     close(fd);
-//     return 0;
+//     return (0);
 // }
