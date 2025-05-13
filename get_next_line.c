@@ -6,118 +6,138 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:59 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/08 17:51:25 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/13 10:22:42 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "fcntl.h"
 #include "get_next_line.h"
 
-char	*read_chunk(int fd, char *storage)
+int	read_file(int fd, char *storage, char *buffer, char **line)
 {
-	char	buffer[BUFFER_SIZE + 1];
 	ssize_t	bytes;
 	char	*temp;
 
-	if (!storage)
-		storage = ft_strdup("");
-	if (!storage)
-		return (NULL);
-	while (!ft_strchr(storage, '\n'))
+	if (!storage | !buffer | !line | !(*line))
+		return (-1);
+	bytes = 1;
+	while (!check_new_line(storage) && bytes > 0)
 	{
 		bytes = read(fd, buffer, BUFFER_SIZE);
-		if(bytes <0)
+		if (bytes == -1)
 		{
-			free(storage);
-			return NULL;
+			storage[0] = '\0';
+			return (-1);
 		}
-		if (bytes == 0)
-			break ;
 		buffer[bytes] = '\0';
-		temp = ft_strjoin(storage, buffer);
-		free(storage);
-		storage = temp;
+		temp = ft_strjoin(*line, storage);
+		if (!temp)
+			return (-1);
+		free(*line);
+		*line = temp;
+		add_to_storage(storage, buffer, bytes);
 	}
-	return (storage);
+	return (bytes);
 }
 
-static char	*get_line(char *storage)
+static char	*get_line(char *s)
 {
 	int		i;
 	char	*line;
 
 	i = 0;
-	if (!storage || storage[0] == '\0')
+	while (s[i] && s[i] != '\n')
+		i++;
+	line = malloc(i + 2);
+	if (!line)
 		return (NULL);
-	while (storage[i] && storage[i] != '\n')
+	i = 0;
+	while (s[i] && s[i] != '\n')
+	{
+		line[i] = s[i];
 		i++;
-	if (storage[i] == '\n')
-		i++;
-	line = ft_substr(storage, 0, i);
+	}
+	if (s[i] == '\n')
+		line[i++] = '\n';
+	line[i] = '\0';
 	return (line);
 }
 
-static char	*trim_buffer(char *storage)
+void	trim_buffer(char *s)
 {
-	size_t	i;
-	char	*updated_storage;
+	int	i;
+	int	j;
 
 	i = 0;
-	while (storage[i] && storage[i] != '\n')
+	j = 0;
+	while (s[i] && s[i] != '\n')
 		i++;
-	if (storage[i] == '\n')
+	if (s[i] == '\n')
 		i++;
-	if (storage[i] == '\0')
+	while (s[i])
 	{
-		free(storage);
-		return (NULL);
+		s[j] = s[i];
+		j++;
+		i++;
 	}
-	updated_storage = ft_strdup(storage + i);
-	free(storage);
-	return (updated_storage);
+	s[j] = '\0';
+}
+
+int	update_line(char **line, char *leftover_line)
+{
+	char	*temp;
+
+	if (!line || !*line || !leftover_line)
+		return (0);
+
+	temp = ft_strjoin(*line, leftover_line);
+	if (!temp)
+		return (0);
+	free(*line);
+	*line = temp;
+	return (1);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*storage;
+	static char	storage[BUFFER_SIZE + 1];
+	char		buffer[BUFFER_SIZE + 1];
 	char		*line;
+	char		*leftover_line;
 
 	if (BUFFER_SIZE <= 0 || fd < 0)
 		return (NULL);
-	storage = read_chunk(fd, storage);
-	if (!storage)
-		return (NULL);
-	line = get_line(storage);
+	line = setup_line();
 	if (!line)
-		return (free(storage), storage = NULL, NULL);
-	storage = trim_buffer(storage);
-	if (line[0] == '\0')
-	{
-		free(line);
-		if (storage)
-		{
-			free(storage);
-			storage = NULL;
-		}
-		return (NULL);
-	}
+		return (free(line), NULL);
+	if (read_file(fd, storage, buffer, &line) == -1)
+		return (free(line), NULL);
+	if (line[0] == '\0' && storage[0] == '\0')
+		return (free(line), NULL);
+	leftover_line = get_line(storage);
+	if (!leftover_line)
+		return (free(line), NULL);
+	if (!update_line(&line, leftover_line))
+		return (free(leftover_line), free(line), NULL);
+	free(leftover_line);
+	trim_buffer(storage);
 	return (line);
 }
 
 // int main(void)
 // {
+// 	int counter = 0;
+// 	int i=0;
+// 	char *next_line;
 //     int fd = open("test.txt", O_RDONLY);
 //     if (fd < 0)
-//     {
-//         return 1;
-//     }
-
-//     char *line;
-//     while ((line = get_next_line(fd)) != NULL)
-//     {
-//         printf("%s", line);
-//         free(line); // Make sure your GNL allocates memory
-//     }
-
+//         return (1);
+// 	while(i++ < 3)
+// 	{
+// 		next_line = get_next_line(fd);
+// 		printf("%s",next_line);
+// 		free(next_line);
+// 	}
 //     close(fd);
-//     return 0;
+//     return (0);
 // }
