@@ -6,7 +6,7 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:59 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/13 10:22:42 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/19 16:03:52 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ int	update_line(char **line, char *leftover_line)
 
 	if (!line || !*line || !leftover_line)
 		return (0);
-
 	temp = ft_strjoin(*line, leftover_line);
 	if (!temp)
 		return (0);
