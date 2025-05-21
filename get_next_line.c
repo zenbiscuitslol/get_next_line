@@ -6,7 +6,7 @@
 /*   By: pprejith <pprejith@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:31:59 by pprejith          #+#    #+#             */
-/*   Updated: 2025/05/19 16:03:52 by pprejith         ###   ########.fr       */
+/*   Updated: 2025/05/21 15:37:17 by pprejith         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	read_file(int fd, char *storage, char *buffer, char **line)
 	ssize_t	bytes;
 	char	*temp;
 
-	if (!storage | !buffer | !line | !(*line))
+	if (!storage || !buffer || !line || !(*line))
 		return (-1);
 	bytes = 1;
 	while (!check_new_line(storage) && bytes > 0)
@@ -83,13 +83,13 @@ void	trim_buffer(char *s)
 	s[j] = '\0';
 }
 
-int	update_line(char **line, char *leftover_line)
+int	update_line(char **line, char *new_data)
 {
 	char	*temp;
 
-	if (!line || !*line || !leftover_line)
+	if (!line || !*line || !new_data)
 		return (0);
-	temp = ft_strjoin(*line, leftover_line);
+	temp = ft_strjoin(*line, new_data);
 	if (!temp)
 		return (0);
 	free(*line);
@@ -102,7 +102,7 @@ char	*get_next_line(int fd)
 	static char	storage[BUFFER_SIZE + 1];
 	char		buffer[BUFFER_SIZE + 1];
 	char		*line;
-	char		*leftover_line;
+	char		*new_data;
 
 	if (BUFFER_SIZE <= 0 || fd < 0)
 		return (NULL);
@@ -113,12 +113,12 @@ char	*get_next_line(int fd)
 		return (free(line), NULL);
 	if (line[0] == '\0' && storage[0] == '\0')
 		return (free(line), NULL);
-	leftover_line = get_line(storage);
-	if (!leftover_line)
+	new_data = get_line(storage);
+	if (!new_data)
 		return (free(line), NULL);
-	if (!update_line(&line, leftover_line))
-		return (free(leftover_line), free(line), NULL);
-	free(leftover_line);
+	if (!update_line(&line, new_data))
+		return (free(new_data), free(line), NULL);
+	free(new_data);
 	trim_buffer(storage);
 	return (line);
 }
