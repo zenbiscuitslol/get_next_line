@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fcntl.h"
 #include "get_next_line.h"
 
 int	read_file(int fd, char *storage, char *buffer, char **line)
