@@ -25,7 +25,6 @@ char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlen(const char *string);
 int		check_new_line(char *s);
 char	*setup_line(void);
-void	add_to_storage(char *storage, char *buffer, int len);
 char	*get_next_line(int fd);
 
 #endif

@@ -12,29 +12,28 @@
 
 #include "get_next_line_bonus.h"
 
-int	read_file(int fd, char *storage, char *buffer, char **line)
+int	read_file(int fd, char *buffer, char **line)
 {
 	ssize_t	bytes;
 	char	*temp;
 
-	if (!storage || !buffer || !line || !(*line))
+	if (!buffer || !line || !(*line))
 		return (-1);
 	bytes = 1;
-	while (!check_new_line(storage) && bytes > 0)
+	while (!check_new_line(buffer) && bytes > 0)
 	{
-		bytes = read(fd, buffer, BUFFER_SIZE);
-		if (bytes == -1)
-		{
-			storage[0] = '\0';
-			return (-1);
-		}
-		buffer[bytes] = '\0';
-		temp = ft_strjoin(*line, storage);
+		temp = ft_strjoin(*line, buffer);
 		if (!temp)
 			return (-1);
 		free(*line);
 		*line = temp;
-		add_to_storage(storage, buffer, bytes);
+		bytes = read(fd, buffer, BUFFER_SIZE);
+		if (bytes == -1)
+		{
+			buffer[0] = '\0';
+			return (-1);
+		}
+		buffer[bytes] = '\0';
 	}
 	return (bytes);
 }
@@ -82,42 +81,35 @@ void	trim_buffer(char *s)
 	s[j] = '\0';
 }
 
-int	update_line(char **line, char *new_data)
+static char	*finish_line(char *line, char *buffer)
 {
+	char	*new_data;
 	char	*temp;
 
-	if (!line || !*line || !new_data)
-		return (0);
-	temp = ft_strjoin(*line, new_data);
-	if (!temp)
-		return (0);
-	free(*line);
-	*line = temp;
-	return (1);
+	new_data = get_line(buffer);
+	if (!new_data)
+		return (free(line), NULL);
+	temp = ft_strjoin(line, new_data);
+	free(new_data);
+	free(line);
+	if (temp)
+		trim_buffer(buffer);
+	return (temp);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	storage[FD_MAX][BUFFER_SIZE + 1];
-	char		buffer[BUFFER_SIZE + 1];
+	static char	buffer[FD_MAX][BUFFER_SIZE + 1];
 	char		*line;
-	char		*new_data;
 
 	if (BUFFER_SIZE <= 0 || fd < 0 || fd >= FD_MAX)
 		return (NULL);
 	line = setup_line();
 	if (!line)
+		return (NULL);
+	if (read_file(fd, buffer[fd], &line) == -1)
 		return (free(line), NULL);
-	if (read_file(fd, storage[fd], buffer, &line) == -1)
+	if (line[0] == '\0' && buffer[fd][0] == '\0')
 		return (free(line), NULL);
-	if (line[0] == '\0' && storage[fd][0] == '\0')
-		return (free(line), NULL);
-	new_data = get_line(storage[fd]);
-	if (!new_data)
-		return (free(line), NULL);
-	if (!update_line(&line, new_data))
-		return (free(new_data), free(line), NULL);
-	free(new_data);
-	trim_buffer(storage[fd]);
-	return (line);
+	return (finish_line(line, buffer[fd]));
 }

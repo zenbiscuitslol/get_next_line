@@ -73,16 +73,3 @@ char	*setup_line(void)
 		line[0] = '\0';
 	return (line);
 }
-
-void	add_to_storage(char *storage, char *buffer, int len)
-{
-	int	i;
-
-	i = 0;
-	while (i < len)
-	{
-		storage[i] = buffer[i];
-		i++;
-	}
-	storage[i] = '\0';
-}
